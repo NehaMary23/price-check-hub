@@ -1,26 +1,28 @@
-
 import requests
 from bs4 import BeautifulSoup
 
-def get_product_info(url):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+def scrape_ebay_product(url):
+    # Send a GET request to the URL
+    response = requests.get(url)
     
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    # Parse the HTML content
+    soup = BeautifulSoup(response.text, 'html.parser')
     
-    # Extract product title
-    title = soup.find('h1').get_text().strip()
-
+    # Extract product name
+    product_name = soup.find('h1', {'class': 'it-ttl'}).text.strip()
+    
     # Extract product price
-    price = soup.find('span', class_='price').get_text().strip()
+    price_element = soup.find('span', {'id': 'prcIsum'})
+    if price_element:
+        product_price = price_element.text.strip()
+    else:
+        product_price = "Price not available"
+    
+    return {'name': product_name, 'price': product_price}
 
-    return title, price
-
-def compare_prices(urls):
-    for url in urls:
-        title, price = get_product_info(url)
-        print(f"Product: {title}")
-        print(f"Price: {price}")
-        print("="*30)
-
+# Example usage
+search_key = input("Enter product: ")
+url = "https://www.ebay.com/sch/i.html?_nkw={{search_key}}"
+product_details = scrape_ebay_product(url)
+print("Product Name:", product_details['name'])
+print("Product Price:", product_details['price'])
