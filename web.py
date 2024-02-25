@@ -1,6 +1,4 @@
-# price-check-hub
 
-This is our Tink-her-Hack Project
 import requests
 from bs4 import BeautifulSoup
 
@@ -25,3 +23,4 @@ def compare_prices(urls):
         print(f"Product: {title}")
         print(f"Price: {price}")
         print("="*30)
+
